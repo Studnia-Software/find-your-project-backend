@@ -1,17 +1,8 @@
 version: '3.9'
 
 services:
-  django:
-    build: .
-    ports:
-      - 8000:8000
-    restart: "on-failure"
-    network_mode: 'host'
-    dns:
-      - 8.8.8.8
-
   db:
-    image: postgres:11-alpine
+    image: postgres:16
 
     environment:
       - POSTGRES_PASSWORD=123456789
@@ -21,3 +12,11 @@ services:
     restart: "on-failure"
     ports:
       - 5432:5432
+
+  django:
+    build: .
+    ports:
+      - 8000:8000
+    restart: "on-failure"
+
+
