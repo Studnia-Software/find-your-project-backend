@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import environ
 
+
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -29,7 +31,9 @@ SECRET_KEY = 'django-insecure-hc@_5@wyt^=7hcrrh=9flm+lm))@z+2s42&!fs7m0%6l1-2yu6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '0.0.0.0'
+]
 
 
 # Application definition
@@ -42,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'users',
     'api'
 ]
 
@@ -81,14 +86,14 @@ WSGI_APPLICATION = 'project_finder.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': 'pgsql',
-        # 'USER': 'postgres',
-        # 'PASSWORD': '123456789',
-        # 'HOST': 'db',
-        # 'PORT': '5432',
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'pgsql',
+        'USER': 'postgres',
+        'PASSWORD': '123456789',
+        'HOST': 'db',
+        'PORT': '5432',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': 'db.sqlite3',
     }
 }
 
@@ -110,6 +115,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = "users.CustomUser"
 
 
 # Internationalization
