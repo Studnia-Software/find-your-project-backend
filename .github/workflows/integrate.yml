@@ -8,7 +8,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     services:
-      postgres:
+      db:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
@@ -37,7 +37,7 @@ jobs:
 
       - name: Run tests
         env:
-          DB: test
+          DB: db
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
           DB_PASSWORD: 123456789
