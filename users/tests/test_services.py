@@ -25,4 +25,16 @@ class TestUserService(TestCase):
 
         self.assertEqual(instance, db_instance)
 
+    def test_login_with_valid_data(self):
+        self.existing_user_data = {
+            'first_name': 'Aaaaaa',
+            'last_name': 'Bbbbbb',
+            'email': 'dupa@dupa.com',
+            'password': 'Dupa1234'
+        }
 
+        self.user = User.objects.create_user(**self.existing_user_data)
+
+        token = self.service.login(self.existing_user_data['email'], self.existing_user_data['password'])
+
+        print(token)

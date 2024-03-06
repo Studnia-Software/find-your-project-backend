@@ -32,7 +32,7 @@ class EndpointTests(TestCase):
         response = self.apiClient.post('/users/register/', mock_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_login_endpoint_with_invalid_data(self):
+    def test_register_endpoint_with_invalid_data(self):
         mock_data = {
             'last_name': 'Grzybowski',
             'password': 'Dupa1234'

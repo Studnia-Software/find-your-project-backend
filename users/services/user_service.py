@@ -1,5 +1,7 @@
 from ..dtos import UserDTO
 from ..models import User
+from . import helpers
+from rest_framework import exceptions
 
 
 class UserService:
@@ -16,8 +18,14 @@ class UserService:
         instance.save()
         return instance
 
+    def login(self, email: str, password: str) -> str:
+        user = helpers.get_user_by_email(email)
 
+        if user is None:
+            raise exceptions.AuthenticationFailed("No user with such email exists")
 
+        if not user.check_password(password):
+            raise exceptions.AuthenticationFailed("Wrong password")
 
-
-        
+        token = helpers.create_token(user.id)
+        return token
