@@ -8,12 +8,12 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     services:
-      db:
+      postgres:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 123456789
-          POSTGRES_DB: db
+          POSTGRES_DB: github_actions
           PGPORT: 5432
         options: >-
           --health-cmd pg_isready
@@ -36,9 +36,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
-        env:
-          DB: db
-          DB_HOST: db
-          DB_PORT: 5432
-          DB_PASSWORD: 123456789
         run: python manage.py test
