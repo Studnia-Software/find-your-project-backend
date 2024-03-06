@@ -13,7 +13,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 123456789
-          POSTGRES_DB: pgsql
+          POSTGRES_DB: db
           PGPORT: 5432
         options: >-
           --health-cmd pg_isready
@@ -38,7 +38,7 @@ jobs:
       - name: Run tests
         env:
           DB: db
-          DB_HOST: 127.0.0.1
+          DB_HOST: db
           DB_PORT: 5432
           DB_PASSWORD: 123456789
         run: python manage.py test
