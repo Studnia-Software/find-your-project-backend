@@ -12,8 +12,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import environ
+from datetime import timedelta
+from rest_framework.settings import api_settings
 
-
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 
 env = environ.Env()
 environ.Env.read_env()
@@ -48,7 +51,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users',
     'api',
-    'rest_framework_simplejwt',
+    'knox',  # token auth
 ]
 
 MIDDLEWARE = [
@@ -140,8 +143,22 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "users.User"
 
+REST_KNOX = {
+  'SECURE_HASH_ALGORITHM': hashes.SHA512,
+  'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+  'TOKEN_TTL': timedelta(hours=10),
+  'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+  'TOKEN_LIMIT_PER_USER': None,
+  'AUTO_REFRESH': False,
+  'MIN_REFRESH_INTERVAL': 60,
+  'AUTH_HEADER_PREFIX': 'Token',
+  'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
+  'TOKEN_MODEL': 'knox.AuthToken',
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'knox.auth.TokenAuthentication'
     )
 }
+
