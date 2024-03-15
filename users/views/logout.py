@@ -15,8 +15,8 @@ class LogoutView(APIView):
     user_service = UserService()
 
     def post(self, request):
-        token = request.headers.get('Authorization')
-        logged_out = self.user_service.logout(token[6:])
+        token = request.headers.get('Authorization').split(" ")[1]
+        logged_out = self.user_service.logout(token)
         if logged_out:
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:

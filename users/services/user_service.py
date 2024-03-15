@@ -1,11 +1,8 @@
-from rest_framework.response import Response
-
 from ..dtos import UserDTO
 from ..models import User
 from . import helpers
 from rest_framework import exceptions
 from knox.settings import knox_settings
-from knox.views import LoginView as KnoxLoginView
 from knox.models import AuthToken
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 
@@ -36,11 +33,13 @@ class UserService:
     def login(self, email: str, password: str) -> (AuthToken, User):
         user = helpers.get_user_by_email(email)
 
+        # move to serializer
         if user is None:
             raise exceptions.AuthenticationFailed("No user with such email exists")
 
         if not user.check_password(password):
             raise exceptions.AuthenticationFailed("Wrong password")
+        #
 
         token = self._login_user(user)
         return token, user
@@ -54,6 +53,16 @@ class UserService:
         token_instance = token_instance[0]
         user_logged_out.send(sender=token_instance.user.__class__, user=token_instance.user)
         token_instance.delete()
+        return True
+
+    def logout_all(self, token) -> bool:
+        tokens = AuthToken.objects.filter(token_key=token[:8])
+
+        if not tokens.exists():
+            return False
+
+        user = AuthToken.objects.get(token_key=token[:8]).user
+        AuthToken.objects.filter(user=user).delete()
         return True
 
 

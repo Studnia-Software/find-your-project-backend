@@ -91,10 +91,10 @@ WSGI_APPLICATION = 'project_finder.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'github_actions',
+        'NAME': 'pgsql',
         'USER': 'postgres',
         'PASSWORD': '123456789',
-        'HOST': '127.0.0.1',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
