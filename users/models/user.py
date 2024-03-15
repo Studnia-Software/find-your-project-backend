@@ -6,7 +6,7 @@ from ..managers.user_manager import UserManager
 
 class User(AbstractUser):
     email = EmailField(unique=True, verbose_name="Email", max_length=255)
-    user_details_id = OneToOneField(to=UserDetails, on_delete=SET_NULL, null=True)
+    user_details_id = OneToOneField(to=UserDetails, on_delete=SET_NULL, null=True, blank=True)
     username = None
 
     objects = UserManager()

@@ -1,10 +1,11 @@
-from ..dtos import UserDTO
-from ..models import User
-from . import helpers
-from rest_framework import exceptions
 from knox.settings import knox_settings
 from knox.models import AuthToken
+
+from rest_framework import exceptions
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+
+from users.dtos import UserDTO
+from users.models import User
 
 
 class UserService:
@@ -13,6 +14,9 @@ class UserService:
         instance, token = AuthToken.objects.create(user, token_ttl)
         user_logged_in.send(sender=user.__class__, user=user)
         return token
+
+    def _get_user_by_email(self, email) -> User:
+        return User.objects.filter(email=email).first()
 
     def create_user(self, user_dto: UserDTO) -> (str, User) or None:
         user = User(
@@ -27,11 +31,10 @@ class UserService:
         user.save()
 
         token = self._login_user(user)
-
         return token, user
 
     def login(self, email: str, password: str) -> (AuthToken, User):
-        user = helpers.get_user_by_email(email)
+        user = self._get_user_by_email(email)
 
         # move to serializer
         if user is None:
