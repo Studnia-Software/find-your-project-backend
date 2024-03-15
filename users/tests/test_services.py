@@ -11,6 +11,9 @@ import random
 from knox.settings import knox_settings
 from django.contrib.auth.signals import user_logged_in
 
+from datetime import timedelta
+
+
 class TestUserService(TestCase):
     def _random_str(self, length: int) -> str:
         source = string.ascii_lowercase
@@ -34,9 +37,9 @@ class TestUserService(TestCase):
 
         return user
 
-    def _login_user(self, user) -> (AuthToken, str):
+    def _login_user(self, user: User, ttl: timedelta = timedelta(minutes=10)) -> (AuthToken, str):
         token_ttl = knox_settings.TOKEN_TTL
-        instance, token = AuthToken.objects.create(user, token_ttl)
+        instance, token = AuthToken.objects.create(user, ttl)
         user_logged_in.send(sender=user.__class__, user=user)
         return instance, token
 
