@@ -78,5 +78,12 @@ class EndpointTests(TestCase):
         response = self.apiClient.get('/users/check-auth/')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_request_password_reset_endpoint_with_valid_email(self):
+        response = self.apiClient.post('/users/request-password-reset/', {'email': self.user.email})
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_request_password_reset_endpoint_with_invalid_email(self):
+        response = self.apiClient.post('/users/request-password-reset/', {'email': "aaaa"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 

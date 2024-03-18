@@ -5,11 +5,14 @@ from users.models import User
 from users.services import UserService
 from users.serializers import UserSerializer
 from . import utils
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
 
 class TestUserService(TestCase):
     def setUp(self):
-        self.service = UserService()
         self.user, self.password = utils.create_mock_user()
+        self.password_reset_token_generator = PasswordResetTokenGenerator()
+        self.service = UserService(password_reset_token_generator=self.password_reset_token_generator)
 
     def test_create_user(self):
         mock_data, password = utils.generate_mock_user_data()
@@ -54,3 +57,12 @@ class TestUserService(TestCase):
         logged_out = self.service.logout_all("aaaaaaaaaaaaaaaaaaaaaa")
         self.assertFalse(logged_out)
 
+    def test_request_password_reset_with_valid_token(self):
+        token = self.service.request_password_reset_token(self.user.email)
+        self.assertTrue(self.password_reset_token_generator.check_token(self.user, token))
+
+    def test_reset_password(self):
+        token = self.password_reset_token_generator.make_token(self.user)
+        self.service.reset_password(email=self.user.email, token=token, new_password="Apud1234")
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Apud1234"))
