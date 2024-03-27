@@ -13,7 +13,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 123456789
-          POSTGRES_DB: github_actions
+          POSTGRES_DB: test_db
           PGPORT: 5432
         options: >-
           --health-cmd pg_isready
@@ -34,6 +34,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Load environment variables
+        run: python scripts/python/load_test_env_file.py
 
       - name: Run tests
         run: python manage.py test
