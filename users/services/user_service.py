@@ -7,8 +7,13 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from users.dtos import UserDTO
 from users.models import User
 
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
 
 class UserService:
+    def __init__(self, password_reset_token_generator: PasswordResetTokenGenerator = PasswordResetTokenGenerator()):
+        self.password_reset_token_generator = password_reset_token_generator
+
     def _login_user(self, user: User) -> str:
         token_ttl = knox_settings.TOKEN_TTL
         instance, token = AuthToken.objects.create(user, token_ttl)
@@ -68,4 +73,24 @@ class UserService:
         AuthToken.objects.filter(user=user).delete()
         return True
 
+    def request_password_reset_token(self, email: str) -> str:
+        user = self._get_user_by_email(email)
+        if not user:
+            raise ValueError("No user with such email exists")
 
+        token = self.password_reset_token_generator.make_token(user)
+        return token
+
+    def reset_password(self, email: str, token: str, new_password: str) -> User:
+        user = self._get_user_by_email(email)
+        if not user:
+            raise ValueError("No user with such email exists")
+
+        valid = self.password_reset_token_generator.check_token(user, token)
+        if not valid:
+            raise ValueError("Invalid token")
+
+        user.set_password(new_password)
+        user.save()
+
+        return user

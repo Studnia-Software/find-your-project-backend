@@ -14,6 +14,7 @@ from pathlib import Path
 import environ
 from datetime import timedelta
 from rest_framework.settings import api_settings
+from os import path
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -162,3 +163,6 @@ REST_FRAMEWORK = {
     )
 }
 
+PASSWORD_RESET_TIMEOUT_DAYS = 0.5
+
+EMAIL_BASE_DIR = path.join(BASE_DIR, "tmp", "emails")
