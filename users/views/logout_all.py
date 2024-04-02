@@ -5,17 +5,22 @@ from rest_framework.views import APIView
 from rest_framework import permissions, status
 from rest_framework.response import Response
 
-from ..services import UserService
+from users.services import UserService
+from users.views.utils import get_auth_token
 
 
 class LogoutAllView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    user_service = UserService()
+    user_service: UserService = None
+
+    def __init__(self, user_service: UserService, **kwargs):
+        super().__init__(**kwargs)
+        self.user_service = user_service
 
     def post(self, request):
-        token = request.headers.get('Authorization').split(" ")[1]
+        token = get_auth_token(request)
         logged_out = self.user_service.logout_all(token)
 
         if logged_out:

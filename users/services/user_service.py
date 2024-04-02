@@ -1,7 +1,7 @@
 from knox.settings import knox_settings
 from knox.models import AuthToken
 
-from rest_framework import exceptions
+from rest_framework import exceptions as rest_exceptions
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 from users.dtos import UserDTO
@@ -41,13 +41,8 @@ class UserService:
     def login(self, email: str, password: str) -> (AuthToken, User):
         user = self._get_user_by_email(email)
 
-        # move to serializer
-        if user is None:
-            raise exceptions.AuthenticationFailed("No user with such email exists")
-
         if not user.check_password(password):
-            raise exceptions.AuthenticationFailed("Wrong password")
-        #
+            raise rest_exceptions.AuthenticationFailed("Wrong password")
 
         token = self._login_user(user)
         return token, user
@@ -75,9 +70,6 @@ class UserService:
 
     def request_password_reset_token(self, email: str) -> str:
         user = self._get_user_by_email(email)
-        if not user:
-            raise ValueError("No user with such email exists")
-
         token = self.password_reset_token_generator.make_token(user)
         return token
 

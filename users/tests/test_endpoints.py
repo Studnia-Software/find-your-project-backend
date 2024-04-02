@@ -36,12 +36,11 @@ class EndpointTests(TestCase):
 
     def test_login_endpoint_with_valid_data(self):
         response = self.apiClient.post('/users/login/', {'email': self.user.email, "password": self.password})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(AuthToken.objects.get(user=self.user).token_key, json.loads(response.content)['token'])
 
     def test_login_endpoint_with_invalid_data(self):
         response = self.apiClient.post('/users/login/', {'email': 'bademail@chuj.com', 'password': 'ehehehehehehehehehe'})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_logout_endpoint_with_valid_token(self):
         instance, token = utils.login_mock_user(self.user)

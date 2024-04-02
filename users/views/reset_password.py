@@ -1,22 +1,22 @@
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.services import UserService
 
 
 class ResetPasswordView(APIView):
-    user_service = None
+    permission_classes = [permissions.AllowAny]
 
-    def __init__(self, user_service: UserService):
-        super().__init__()
+    user_service: UserService = None
+
+    def __init__(self, user_service: UserService, **kwargs):
+        super().__init__(**kwargs)
         self.user_service = user_service
 
-    def post(self, request, *args, **kwargs) -> Response:
-        # move into serializer
+    def post(self, request) -> Response:
         email = request.data.get('email')
         token = request.data.get('token')
         new_password = request.data.get('new_password')
-        #
 
         try:
             self.user_service.reset_password(email, token, new_password)
