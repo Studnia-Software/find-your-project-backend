@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-from .project import Project
+from api.models.project import Project
 from .project_roles import ProjectRole
 
 
