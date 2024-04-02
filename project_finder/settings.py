@@ -14,6 +14,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
+import environ
+from datetime import timedelta
+from rest_framework.settings import api_settings
+from os import path
+
+from cryptography.hazmat.primitives import hashes
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,7 +36,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '0.0.0.0',
+    '127.0.0.1',
+    'localhost',  # 0.0.0.0 doesn't work on windows
+]
 
 
 # Application definition
@@ -42,7 +53,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'api'
+    'users',
+    'api',
+    'knox',  # token auth
 ]
 
 MIDDLEWARE = [
@@ -109,7 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -131,3 +143,27 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = "users.User"
+
+REST_KNOX = {
+  'SECURE_HASH_ALGORITHM': hashes.SHA512,
+  'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+  'TOKEN_TTL': timedelta(hours=10),
+  'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+  'TOKEN_LIMIT_PER_USER': None,
+  'AUTO_REFRESH': False,
+  'MIN_REFRESH_INTERVAL': 60,
+  'AUTH_HEADER_PREFIX': 'Token',
+  'EXPIRY_DATETIME_FORMAT': api_settings.DATETIME_FORMAT,
+  'TOKEN_MODEL': 'knox.AuthToken',
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'knox.auth.TokenAuthentication'
+    )
+}
+
+PASSWORD_RESET_TIMEOUT_DAYS = 0.5
+
+EMAIL_BASE_DIR = path.join(BASE_DIR, "tmp", "emails")
