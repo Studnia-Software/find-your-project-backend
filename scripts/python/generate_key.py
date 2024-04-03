@@ -1,7 +1,7 @@
-import os.path
-
 from django.core.management.utils import get_random_secret_key
 from pathlib import Path
+
+import os
 
 PROJECT_PATH = Path(__file__).resolve().parent.parent.parent
 
