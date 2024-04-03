@@ -10,6 +10,7 @@ def generate():
     try:
         with open(os.path.join(PROJECT_PATH, '.env'), 'a') as file:
             print('\nSECRET_KEY=' + get_random_secret_key(), file=file)
+            print("Secret key generated successfully!")
     except FileNotFoundError:
         print('.env file not found.')
 
